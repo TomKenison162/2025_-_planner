@@ -226,7 +226,7 @@
             const netInvestmentGrowth = trustFundValue * (netGrowthRate / 100);
             const eoyInvestments = trustFundValue + netInvestmentGrowth;
 
-            const eoyNetWorth = eoyLiquidCash + eoyInvestments;
+            const eoyNetWorth = eoyLiquidCash + eoyInvestments - totalAnnualCosts;
             const netWorthChange = eoyNetWorth - startNetWorth;
             
             // --- Update UI ---
