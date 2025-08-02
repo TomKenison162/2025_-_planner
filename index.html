@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Interactive Financial Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        .metric-value.positive { color: #16a34a; }
+        .metric-value.negative { color: #dc2626; }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 text-gray-800">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Advanced Financial Dashboard</h1>
+            <p class="text-lg text-gray-600 mt-2">Model your academic year finances. Your data is saved locally in your browser.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- ====== INPUTS COLUMN ====== -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-lg space-y-4">
+                <div class="flex justify-between items-center border-b pb-3 mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Inputs</h2>
+                    <button id="clearDataBtn" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Clear Data</button>
+                </div>
+                
+                <!-- Grouped Inputs -->
+                <details open class="space-y-4">
+                    <summary class="font-semibold text-lg cursor-pointer">Job & Income</summary>
+                    <div class="pl-4 border-l-2 border-gray-200 space-y-4 pt-2">
+                        <div>
+                            <label for="payRate" class="block text-sm font-medium text-gray-700">Pay Rate (USD/hour)</label>
+                            <input type="number" id="payRate" placeholder="e.g., 20" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="workHours" class="block text-sm font-medium text-gray-700">Weekly Work Hours</label>
+                            <input type="number" id="workHours" placeholder="e.g., 10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                         <div>
+                            <label for="weeksWorked" class="block text-sm font-medium text-gray-700">Weeks Worked So Far</label>
+                            <input type="number" id="weeksWorked" placeholder="e.g., 5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                    </div>
+                </details>
+
+                <details open class="space-y-4">
+                    <summary class="font-semibold text-lg cursor-pointer">Housing & Living</summary>
+                     <div class="pl-4 border-l-2 border-gray-200 space-y-4 pt-2">
+                        <div>
+                            <label for="rent" class="block text-sm font-medium text-gray-700">Monthly Rent (£)</label>
+                            <input type="number" id="rent" placeholder="e.g., 771" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                         <div>
+                            <label for="monthsRentPaid" class="block text-sm font-medium text-gray-700">Months Rent Paid So Far</label>
+                            <input type="number" id="monthsRentPaid" placeholder="e.g., 2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="bills" class="block text-sm font-medium text-gray-700">Your Monthly Bills Share (£)</label>
+                            <input type="number" id="bills" placeholder="e.g., 70" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="weeklyLivingBudget" class="block text-sm font-medium text-gray-700">Weekly Living Budget (£)</label>
+                            <input type="number" id="weeklyLivingBudget" placeholder="e.g., 100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                    </div>
+                </details>
+
+                <details open class="space-y-4">
+                    <summary class="font-semibold text-lg cursor-pointer">Capital & Investments</summary>
+                     <div class="pl-4 border-l-2 border-gray-200 space-y-4 pt-2">
+                        <div>
+                            <label for="maintenanceLoan" class="block text-sm font-medium text-gray-700">Annual Maintenance Loan (£)</label>
+                            <input type="number" id="maintenanceLoan" placeholder="e.g., 5000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="initialChecking" class="block text-sm font-medium text-gray-700">Initial Checking Account Bal (£)</label>
+                            <input type="number" id="initialChecking" placeholder="e.g., 4000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="tripCost" class="block text-sm font-medium text-gray-700">Planned One-Off Expenses (£)</label>
+                            <input type="number" id="tripCost" placeholder="e.g., 1300" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="trustFundValue" class="block text-sm font-medium text-gray-700">Initial Investment Value (£)</label>
+                            <input type="number" id="trustFundValue" placeholder="e.g., 40000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                         <div>
+                            <label for="expectedGrowth" class="block text-sm font-medium text-gray-700">Expected Annual Growth (%)</label>
+                            <input type="number" id="expectedGrowth" placeholder="e.g., 7" step="0.1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="fundFee" class="block text-sm font-medium text-gray-700">Investment Fund Fee (%)</label>
+                            <input type="number" id="fundFee" placeholder="e.g., 0.9" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- ====== OUTPUTS COLUMN ====== -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">Income & Savings Analysis</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                        <div class="flex justify-between"><span>Weekly Income (Job):</span> <span id="out-weeklyIncome" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span>Weekly Savings Target:</span> <span id="out-weeklySavings" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span>Projected Annual Job Income:</span> <span id="out-annualJobIncome" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span>Projected Annual Savings:</span> <span id="out-annualSavings" class="font-semibold"></span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">Cash Flow & Burn Rate</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                        <div class="flex justify-between"><span>Total Annual Costs:</span> <span id="out-totalCosts" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span>Remaining Housing Costs:</span> <span id="out-remainingHousing" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span>Average Monthly Burn Rate:</span> <span id="out-burnRate" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span>Financial Runway (Months):</span> <span id="out-runway" class="font-semibold"></span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">Bottom Line & Net Worth</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                        <div class="flex justify-between"><span>Starting Net Worth:</span> <span id="out-startNetWorth" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span>Net Investment Growth:</span> <span id="out-netGrowth" class="font-semibold metric-value"></span></div>
+                        <div class="flex justify-between"><span>End of Year Liquid Cash:</span> <span id="out-eoyCash" class="font-semibold metric-value"></span></div>
+                        <div class="flex justify-between"><span>End of Year Investments:</span> <span id="out-eoyInvestments" class="font-semibold"></span></div>
+                        <div class="flex justify-between col-span-full pt-2 mt-2 border-t">
+                            <span class="font-bold text-lg">Projected End of Year Net Worth:</span> 
+                            <span id="out-eoyNetWorth" class="font-bold text-lg metric-value"></span>
+                        </div>
+                        <div class="flex justify-between col-span-full">
+                             <span class="font-bold text-lg">Net Worth Change This Year:</span> 
+                             <span id="out-netWorthChange" class="font-bold text-lg metric-value"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allInputs = document.querySelectorAll('input[type="number"]');
+        const USD_TO_GBP = 0.80; // Default exchange rate
+        const ACADEMIC_WEEKS = 39;
+        const RENT_MONTHS = 11;
+
+        // --- Caching Logic ---
+        function saveToCache() {
+            allInputs.forEach(input => {
+                localStorage.setItem(input.id, input.value);
+            });
+        }
+
+        function loadFromCache() {
+            allInputs.forEach(input => {
+                const savedValue = localStorage.getItem(input.id);
+                if (savedValue !== null) {
+                    input.value = savedValue;
+                }
+            });
+        }
+
+        function clearCache() {
+            if (confirm('Are you sure you want to clear all saved data?')) {
+                allInputs.forEach(input => {
+                    localStorage.removeItem(input.id);
+                    input.value = '';
+                });
+                calculate();
+            }
+        }
+        
+        document.getElementById('clearDataBtn').addEventListener('click', clearCache);
+
+        // --- Main Calculation Logic ---
+        function calculate() {
+            // Get all input values, defaulting to 0 if empty
+            const payRate = parseFloat(document.getElementById('payRate').value) || 0;
+            const workHours = parseFloat(document.getElementById('workHours').value) || 0;
+            const weeksWorked = parseFloat(document.getElementById('weeksWorked').value) || 0;
+            const rent = parseFloat(document.getElementById('rent').value) || 0;
+            const monthsRentPaid = parseFloat(document.getElementById('monthsRentPaid').value) || 0;
+            const bills = parseFloat(document.getElementById('bills').value) || 0;
+            const weeklyLivingBudget = parseFloat(document.getElementById('weeklyLivingBudget').value) || 0;
+            const maintenanceLoan = parseFloat(document.getElementById('maintenanceLoan').value) || 0;
+            const initialChecking = parseFloat(document.getElementById('initialChecking').value) || 0;
+            const tripCost = parseFloat(document.getElementById('tripCost').value) || 0;
+            const trustFundValue = parseFloat(document.getElementById('trustFundValue').value) || 0;
+            const expectedGrowth = parseFloat(document.getElementById('expectedGrowth').value) || 0;
+            const fundFee = parseFloat(document.getElementById('fundFee').value) || 0;
+
+            // Calculations
+            const weeklyIncomeGbp = payRate * workHours * USD_TO_GBP;
+            const weeklySavings = weeklyIncomeGbp - weeklyLivingBudget;
+            const annualJobIncome = weeklyIncomeGbp * ACADEMIC_WEEKS;
+            const projectedAnnualSavings = weeklySavings * ACADEMIC_WEEKS;
+
+            const totalHousingCosts = (rent + bills) * RENT_MONTHS;
+            const remainingHousingCosts = totalHousingCosts - (rent * monthsRentPaid) - (bills * monthsRentPaid);
+            
+            const totalAnnualLivingCosts = weeklyLivingBudget * ACADEMIC_WEEKS;
+            const totalAnnualCosts = totalHousingCosts + totalAnnualLivingCosts;
+            const monthlyBurnRate = totalAnnualCosts / 12;
+
+            const startNetWorth = initialChecking + trustFundValue;
+            const eoyLiquidCash = initialChecking + projectedAnnualSavings - tripCost;
+            const runway = monthlyBurnRate > 0 ? eoyLiquidCash / monthlyBurnRate : Infinity;
+
+            const netGrowthRate = expectedGrowth - fundFee;
+            const netInvestmentGrowth = trustFundValue * (netGrowthRate / 100);
+            const eoyInvestments = trustFundValue + netInvestmentGrowth;
+
+            const eoyNetWorth = eoyLiquidCash + eoyInvestments;
+            const netWorthChange = eoyNetWorth - startNetWorth;
+            
+            // --- Update UI ---
+            const formatCurrency = (val) => val.toLocaleString('en-GB', { style: 'currency', currency: 'GBP' });
+            const updateMetric = (id, value, isCurrency = true, checkSign = false) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = isCurrency ? formatCurrency(value) : value;
+                if (checkSign) {
+                    el.classList.toggle('positive', value >= 0);
+                    el.classList.toggle('negative', value < 0);
+                }
+            };
+
+            updateMetric('out-weeklyIncome', weeklyIncomeGbp);
+            updateMetric('out-weeklySavings', weeklySavings, true, true);
+            updateMetric('out-annualJobIncome', annualJobIncome);
+            updateMetric('out-annualSavings', projectedAnnualSavings, true, true);
+            
+            updateMetric('out-totalCosts', totalAnnualCosts);
+            updateMetric('out-remainingHousing', remainingHousingCosts);
+            updateMetric('out-burnRate', monthlyBurnRate);
+            updateMetric('out-runway', `${isFinite(runway) ? runway.toFixed(1) : '∞'} months`, false);
+
+            updateMetric('out-startNetWorth', startNetWorth);
+            updateMetric('out-netGrowth', netInvestmentGrowth, true, true);
+            updateMetric('out-eoyCash', eoyLiquidCash, true, true);
+            updateMetric('out-eoyInvestments', eoyInvestments);
+            updateMetric('out-eoyNetWorth', eoyNetWorth, true, true);
+            updateMetric('out-netWorthChange', netWorthChange, true, true);
+            
+            // Save valid inputs to cache after calculation
+            saveToCache();
+        }
+
+        // Add event listeners to all inputs
+        allInputs.forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        // Load data from cache and run initial calculation on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromCache();
+            calculate();
+        });
+
+    </script>
+</body>
+</html>
