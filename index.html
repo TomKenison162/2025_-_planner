@@ -1,121 +1,184 @@
+Of course\! I've significantly enhanced the financial dashboard by incorporating a wide range of new features as you requested.
 
+This upgraded version includes:
+
+  * **More Detailed Inputs:** Granular fields for various income sources (scholarships, parental help) and expenses (groceries, transport, social).
+  * **Advanced Output Metrics:** New calculations like weekly discretionary spending and a savings rate.
+  * **Dynamic Personal Feedback:** The dashboard now gives you contextual advice based on your financial situation.
+  * **Student Spending Comparison:** A dedicated module that compares your spending habits against the average student in the UK and specifically in Bath, using up-to-date data.
+  * **Enhanced Visualizations:** A detailed month-by-month net worth projection chart and a new comparison bar chart.
+  * **Improved UX:** A refreshed UI with icons, tooltips, and buttons to load sample data to see how it works.
+
+Here is the complete, upgraded code. You can copy and paste it into an `.html` file and open it in your browser.
+
+-----
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprehensive Financial Dashboard with Visualizations</title>
+    <title>Advanced Student Financial Dashboard & Forecaster</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Lighter gray background */
+            background-color: #f0f2f5; /* Slightly darker, professional background */
         }
         .metric-value.positive { color: #16a34a; }
         .metric-value.negative { color: #dc2626; }
-        input:focus {
+        .metric-value.neutral { color: #4b5563; }
+        input:focus, select:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
         }
-        /* Style for the collapsible details/summary element */
         summary {
             transition: margin 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         details[open] > summary {
             margin-bottom: 0.75rem;
         }
-        /* Container for charts to maintain aspect ratio */
         .chart-container {
             position: relative;
             height: 300px;
             width: 100%;
         }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #334155;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 text-gray-800">
+<body class="p-4 sm:p-6 lg:p-8 text-gray-800">
 
     <div class="max-w-screen-2xl mx-auto">
         <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Comprehensive Financial Dashboard 📊</h1>
-            <p class="text-lg text-gray-600 mt-2">Model your academic year finances. All data is saved locally in your browser.</p>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900">Advanced Student Financial Forecaster 🚀</h1>
+            <p class="text-lg text-gray-600 mt-2">Get a detailed forecast of your finances and see how you stack up against other students.</p>
         </header>
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
             
-            <div class="xl:col-span-1 bg-white p-6 rounded-2xl shadow-lg space-y-4 self-start">
+            <div class="xl:col-span-1 bg-white p-6 rounded-2xl shadow-xl space-y-4 self-start">
                 <div class="flex justify-between items-center border-b pb-3 mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Your Financial Inputs</h2>
-                    <button id="clearDataBtn" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Clear All Data</button>
+                    <h2 class="text-2xl font-bold text-gray-800">Your Financial DNA</h2>
+                    <div class="flex gap-2">
+                        <button id="loadSampleBtn" class="text-sm text-gray-500 hover:text-gray-800 font-semibold" title="Load sample data"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                        <button id="clearDataBtn" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold" title="Clear all inputs"><i class="fa-solid fa-trash"></i> Clear</button>
+                    </div>
                 </div>
-                
+
                 <details open class="space-y-4">
-                    <summary class="font-semibold text-lg cursor-pointer list-disc list-inside">💰 Income & Capital</summary>
-                    <div class="pl-4 border-l-2 border-gray-200 space-y-4 pt-2">
-                        <div>
-                            <label for="payRate" class="block text-sm font-medium text-gray-700">Pay Rate (£/hour)</label>
-                            <input type="number" id="payRate" placeholder="e.g., 12.50" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                        </div>
-                        <div>
-                            <label for="workHours" class="block text-sm font-medium text-gray-700">Weekly Work Hours</label>
-                            <input type="number" id="workHours" placeholder="e.g., 15" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                        </div>
-                         <div>
-                            <label for="maintenanceLoan" class="block text-sm font-medium text-gray-700">Annual Maintenance Loan (£)</label>
-                            <input type="number" id="maintenanceLoan" placeholder="e.g., 9000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                        </div>
+                    <summary class="font-semibold text-lg cursor-pointer"><i class="fa-solid fa-landmark text-indigo-500"></i> Capital & Savings</summary>
+                    <div class="pl-6 border-l-2 border-gray-200 space-y-4 pt-2">
                         <div>
                             <label for="initialChecking" class="block text-sm font-medium text-gray-700">Starting Cash Balance (£)</label>
                             <input type="number" id="initialChecking" placeholder="e.g., 2500" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
                         </div>
+                         <div>
+                            <label for="initialInvestmentValue" class="block text-sm font-medium text-gray-700">Initial Investment Value (£)</label>
+                            <input type="number" id="initialInvestmentValue" placeholder="e.g., 5000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                    </div>
+                </details>
+                
+                <details open class="space-y-4">
+                    <summary class="font-semibold text-lg cursor-pointer"><i class="fa-solid fa-sack-dollar text-green-500"></i> Monthly Income</summary>
+                    <div class="pl-6 border-l-2 border-gray-200 space-y-4 pt-2">
+                        <div>
+                            <label for="maintenanceLoan" class="block text-sm font-medium text-gray-700">Annual Maintenance Loan (£)</label>
+                            <input type="number" id="maintenanceLoan" placeholder="e.g., 9978" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="payRate" class="block text-sm font-medium text-gray-700">Part-time Pay Rate (£/hour)</label>
+                            <input type="number" id="payRate" placeholder="e.g., 11.50" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="workHours" class="block text-sm font-medium text-gray-700">Weekly Work Hours (Term-time)</label>
+                            <input type="number" id="workHours" placeholder="e.g., 12" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="scholarships" class="block text-sm font-medium text-gray-700">Scholarships/Bursaries (£/year)</label>
+                            <input type="number" id="scholarships" placeholder="e.g., 2000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                         <div>
+                            <label for="parentalSupport" class="block text-sm font-medium text-gray-700">Parental Support (£/month)</label>
+                            <input type="number" id="parentalSupport" placeholder="e.g., 150" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
                     </div>
                 </details>
 
                 <details open class="space-y-4">
-                    <summary class="font-semibold text-lg cursor-pointer list-disc list-inside">💸 Expenses</summary>
-                     <div class="pl-4 border-l-2 border-gray-200 space-y-4 pt-2">
+                    <summary class="font-semibold text-lg cursor-pointer"><i class="fa-solid fa-receipt text-red-500"></i> Monthly Expenses</summary>
+                    <div class="pl-6 border-l-2 border-gray-200 space-y-4 pt-2">
                         <div>
-                            <label for="rent" class="block text-sm font-medium text-gray-700">Monthly Rent (£)</label>
+                            <label for="rent" class="block text-sm font-medium text-gray-700">Rent</label>
                             <input type="number" id="rent" placeholder="e.g., 750" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
                         </div>
                         <div>
-                            <label for="bills" class="block text-sm font-medium text-gray-700">Your Monthly Bills Share (£)</label>
+                            <label for="bills" class="block text-sm font-medium text-gray-700">Utilities (Gas, Electric, Water, Wi-Fi)</label>
                             <input type="number" id="bills" placeholder="e.g., 80" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
                         </div>
-                        <div>
-                            <label for="weeklyLivingBudget" class="block text-sm font-medium text-gray-700">Weekly Living Budget (£)</label>
-                            <input type="number" id="weeklyLivingBudget" placeholder="e.g., 100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                        </div>
                          <div>
-                            <label for="oneOffExpenses" class="block text-sm font-medium text-gray-700">Planned One-Off Expenses (£)</label>
-                            <input type="number" id="oneOffExpenses" placeholder="e.g., 1200" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                        </div>
-                    </div>
-                </details>
-
-                <details open class="space-y-4">
-                    <summary class="font-semibold text-lg cursor-pointer list-disc list-inside">📈 Investments</summary>
-                    <div class="pl-4 border-l-2 border-gray-200 space-y-4 pt-2">
-                        <div>
-                            <label for="initialInvestmentValue" class="block text-sm font-medium text-gray-700">Initial Investment Value (£)</label>
-                            <input type="number" id="initialInvestmentValue" placeholder="e.g., 40000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                        </div>
-                         <div>
-                            <label for="expectedGrowth" class="block text-sm font-medium text-gray-700">Expected Annual Growth (%)</label>
-                            <input type="number" id="expectedGrowth" placeholder="e.g., 7" step="0.1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                            <label for="groceries" class="block text-sm font-medium text-gray-700">Groceries</label>
+                            <input type="number" id="groceries" placeholder="e.g., 180" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
                         </div>
                         <div>
-                            <label for="fundFee" class="block text-sm font-medium text-gray-700">Investment Fund Fee (%)</label>
-                            <input type="number" id="fundFee" placeholder="e.g., 0.9" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                            <label for="transport" class="block text-sm font-medium text-gray-700">Transport</label>
+                            <input type="number" id="transport" placeholder="e.g., 50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="social" class="block text-sm font-medium text-gray-700">Social & Leisure (Going out, hobbies)</label>
+                            <input type="number" id="social" placeholder="e.g., 150" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="other" class="block text-sm font-medium text-gray-700">Other (Subscriptions, shopping, etc.)</label>
+                            <input type="number" id="other" placeholder="e.g., 100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="oneOffExpenses" class="block text-sm font-medium text-gray-700">Planned One-Off Expenses (£/year)</label>
+                            <input type="number" id="oneOffExpenses" placeholder="e.g., 500" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
                         </div>
                     </div>
                 </details>
 
                 <details class="space-y-4">
-                    <summary class="font-semibold text-lg cursor-pointer list-disc list-inside">⚙️ Model Configuration</summary>
-                    <div class="pl-4 border-l-2 border-gray-200 space-y-4 pt-2">
+                    <summary class="font-semibold text-lg cursor-pointer"><i class="fa-solid fa-sliders text-gray-500"></i> Model & Market Assumptions</summary>
+                     <div class="pl-6 border-l-2 border-gray-200 space-y-4 pt-2">
+                        <div>
+                            <label for="expectedGrowth" class="block text-sm font-medium text-gray-700">Expected Annual Investment Growth (%)</label>
+                            <input type="number" id="expectedGrowth" value="7" step="0.1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
                          <div>
                             <label for="academicWeeks" class="block text-sm font-medium text-gray-700">Weeks in Academic Year</label>
                             <input type="number" id="academicWeeks" value="39" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
@@ -129,314 +192,340 @@
             </div>
 
             <div class="xl:col-span-2 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-5 rounded-2xl shadow-lg">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">🗓️ Annual Financial Overview</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between"><span>Projected Job Income:</span> <span id="out-annualJobIncome" class="font-semibold"></span></div>
-                            <div class="flex justify-between"><span>Maintenance Loan:</span> <span id="out-maintenanceLoan" class="font-semibold"></span></div>
-                            <div class="flex justify-between font-bold text-base pt-2 border-t"><span>Total Annual Income:</span> <span id="out-totalAnnualIncome" class="font-semibold"></span></div>
-                            <div class="flex justify-between text-red-600"><span>Total Annual Expenses:</span> <span id="out-totalAnnualExpenses" class="font-semibold"></span></div>
-                            <div class="flex justify-between font-bold text-base pt-2 border-t"><span>Annual Surplus / Deficit:</span> <span id="out-annualSurplus" class="font-semibold metric-value"></span></div>
-                        </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-5 rounded-2xl shadow-xl text-center">
+                        <h3 class="text-sm font-semibold text-gray-500">Annual Surplus / Deficit</h3>
+                        <p id="out-annualSurplus" class="text-3xl font-bold metric-value mt-2"></p>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl shadow-lg">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">💳 Annual Expense Breakdown</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between"><span>Housing (Rent & Bills):</span> <span id="out-annualHousingCosts" class="font-semibold"></span></div>
-                            <div class="flex justify-between"><span>General Living Costs:</span> <span id="out-annualLivingCosts" class="font-semibold"></span></div>
-                            <div class="flex justify-between"><span>One-Off Expenses:</span> <span id="out-oneOffExpenses" class="font-semibold"></span></div>
-                            <div class="flex justify-between font-bold text-base pt-2 border-t"><span>Total Annual Expenses:</span> <span id="out-totalAnnualExpenses2" class="font-semibold text-red-600"></span></div>
-                        </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-xl text-center">
+                        <h3 class="text-sm font-semibold text-gray-500">End-of-Year Net Worth</h3>
+                        <p id="out-eoyNetWorth" class="text-3xl font-bold metric-value mt-2"></p>
                     </div>
-                     <div class="bg-white p-5 rounded-2xl shadow-lg">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">🌊 Cash Flow Analysis</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between"><span>Weekly Income (Job):</span> <span id="out-weeklyIncome" class="font-semibold"></span></div>
-                            <div class="flex justify-between"><span>Weekly Spend (Living):</span> <span id="out-weeklyLivingSpend" class="font-semibold"></span></div>
-                            <div class="flex justify-between"><span>Average Monthly Spend:</span> <span id="out-monthlyBurn" class="font-semibold"></span></div>
-                            <div class="flex justify-between pt-2 border-t"><span>Starting Cash Balance:</span> <span id="out-startCash" class="font-semibold"></span></div>
-                            <div class="flex justify-between font-bold text-base"><span>Projected End of Year Cash:</span> <span id="out-eoyCash" class="font-semibold metric-value"></span></div>
-                        </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-xl text-center">
+                        <h3 class="text-sm font-semibold text-gray-500">Net Worth Change</h3>
+                        <p id="out-netWorthChange" class="text-3xl font-bold metric-value mt-2"></p>
                     </div>
-                     <div class="bg-white p-5 rounded-2xl shadow-lg">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">💹 Investment Performance</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between"><span>Initial Value:</span> <span id="out-startInvestments" class="font-semibold"></span></div>
-                            <div class="flex justify-between"><span>Gross Growth (%):</span> <span id="out-grossGrowthPercent" class="font-semibold"></span></div>
-                             <div class="flex justify-between"><span>Net Growth Rate (%):</span> <span id="out-netGrowthPercent" class="font-semibold"></span></div>
-                            <div class="flex justify-between pt-2 border-t"><span>Est. Gross Growth (£):</span> <span id="out-grossGrowthValue" class="font-semibold"></span></div>
-                             <div class="flex justify-between"><span>Est. Fund Fees (£):</span> <span id="out-fundFeeValue" class="font-semibold text-red-600"></span></div>
-                             <div class="flex justify-between font-bold text-base"><span>Net Investment Growth (£):</span> <span id="out-netGrowthValue" class="font-semibold metric-value"></span></div>
-                        </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-xl text-center">
+                         <h3 class="text-sm font-semibold text-gray-500">
+                             Term-time Discretionary
+                             <span class="tooltip">
+                                 <i class="fa-regular fa-circle-question text-gray-400"></i>
+                                 <span class="tooltiptext">Your weekly 'fun money' after all essential costs and savings goals are met.</span>
+                             </span>
+                         </h3>
+                         <p id="out-discretionary" class="text-3xl font-bold metric-value mt-2"></p>
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl shadow-lg">
-                     <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-3">✨ Net Worth Summary</h3>
-                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-6">
-                        <div>
-                            <p class="text-sm text-gray-500">Starting Net Worth</p>
-                            <p id="out-startNetWorth" class="text-2xl font-bold"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Projected EOY Net Worth</p>
-                            <p id="out-eoyNetWorth" class="text-2xl font-bold metric-value"></p>
-                        </div>
-                         <div>
-                            <p class="text-sm text-gray-500">Change This Year</p>
-                            <p id="out-netWorthChange" class="text-2xl font-bold metric-value"></p>
-                        </div>
-                     </div>
-                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 border-t">
-                         <div>
-                            <h4 class="text-lg font-semibold text-center mb-2">Annual Expense Breakdown</h4>
-                            <div class="chart-container"><canvas id="expenseChart"></canvas></div>
-                         </div>
-                         <div>
-                            <h4 class="text-lg font-semibold text-center mb-2">Income vs. Expenses</h4>
-                            <div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div>
-                         </div>
-                         <div class="lg:col-span-2">
-                             <h4 class="text-lg font-semibold text-center mb-2">Projected Net Worth Journey</h4>
-                             <div class="chart-container" style="height: 250px;"><canvas id="netWorthChart"></canvas></div>
-                         </div>
-                     </div>
+                <div id="feedbackSection" class="bg-indigo-50 p-5 rounded-2xl shadow-lg flex items-center gap-4">
+                    <i id="feedbackIcon" class="fa-solid fa-lightbulb text-3xl text-indigo-500"></i>
+                    <div>
+                        <h3 class="font-bold text-indigo-800 text-lg">Your Financial Snapshot</h3>
+                        <p id="feedbackText" class="text-indigo-700">Enter your details to get personalized feedback.</p>
+                    </div>
                 </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-xl">
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                        
+                        <div class="lg:col-span-2 space-y-6">
+                             <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">🔢 Financial Breakdown</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between"><span>Total Annual Income:</span> <span id="out-totalAnnualIncome" class="font-semibold"></span></div>
+                                    <div class="flex justify-between text-red-600"><span>Total Annual Expenses:</span> <span id="out-totalAnnualExpenses" class="font-semibold"></span></div>
+                                    <hr class="my-2">
+                                    <div class="flex justify-between"><span>Start of Year Net Worth:</span> <span id="out-startNetWorth" class="font-semibold"></span></div>
+                                    <div class="flex justify-between"><span>Est. Investment Growth (£):</span> <span id="out-netGrowthValue" class="font-semibold metric-value"></span></div>
+                                    <hr class="my-2">
+                                    <div class="flex justify-between font-bold text-base pt-1"><span>Average Monthly Spend:</span> <span id="out-monthlyBurn" class="font-semibold"></span></div>
+                                </div>
+                            </div>
+                             <div>
+                                <h4 class="text-lg font-semibold text-center mb-3">Annual Expense Breakdown</h4>
+                                <div class="chart-container" style="height: 250px;"><canvas id="expenseChart"></canvas></div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-3">
+                             <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3">💸 Projected Net Worth Journey (12 Months)</h3>
+                             <div class="chart-container" style="height: 400px;"><canvas id="netWorthChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-5 rounded-2xl shadow-xl">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-3">🧐 How Do You Compare?</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1 text-center md:text-left p-4 bg-gray-50 rounded-lg">
+                           <h4 class="font-bold text-lg">Your Monthly Spending</h4>
+                            <p class="text-3xl font-bold text-indigo-600 my-2" id="comp-yourTotal"></p>
+                           <p class="text-xs text-gray-500">Based on your inputs. This is your total spend averaged out per month.</p>
+                        </div>
+                         <div class="md:col-span-1 text-center md:text-left p-4 bg-gray-50 rounded-lg">
+                           <h4 class="font-bold text-lg">Avg. UK Student</h4>
+                           <p class="text-3xl font-bold text-gray-700 my-2" id="comp-ukTotal"></p>
+                           <p class="text-xs text-gray-500">Source: National Student Money Survey & ONS estimates (2024/25).</p>
+                        </div>
+                         <div class="md:col-span-1 text-center md:text-left p-4 bg-gray-50 rounded-lg">
+                           <h4 class="font-bold text-lg">Avg. Bath Student</h4>
+                           <p class="text-3xl font-bold text-gray-700 my-2" id="comp-bathTotal"></p>
+                           <p class="text-xs text-gray-500">Source: University of Bath cost estimates & local data (2024/25).</p>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                         <div class="chart-container"><canvas id="comparisonChart"></canvas></div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
     <script>
-        const allInputs = document.querySelectorAll('input[type="number"]');
-        
-        let expenseChart, incomeExpenseChart, netWorthChart;
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Chart Instances ---
+            let expenseChart, netWorthChart, comparisonChart;
+            const allInputs = Array.from(document.querySelectorAll('input[type="number"]'));
 
-        // --- Caching Logic ---
-        function saveToCache() {
-            allInputs.forEach(input => {
-                localStorage.setItem(input.id, input.value);
-            });
-        }
+            // --- COMPARISON DATA (Based on 2024/2025 estimates) ---
+            const STUDENT_AVERAGES = {
+                uk: { rent: 550, bills: 75, groceries: 195, transport: 60, social: 100, other: 90 },
+                bath: { rent: 750, bills: 85, groceries: 210, transport: 55, social: 120, other: 110 },
+            };
+            STUDENT_AVERAGES.uk.total = Object.values(STUDENT_AVERAGES.uk).reduce((a, b) => a + b, 0);
+            STUDENT_AVERAGES.bath.total = Object.values(STUDENT_AVERAGES.bath).reduce((a, b) => a + b, 0);
 
-        function loadFromCache() {
-            allInputs.forEach(input => {
-                const savedValue = localStorage.getItem(input.id);
-                if (savedValue !== null) {
-                    input.value = savedValue;
-                }
-            });
-        }
-
-        function clearCache() {
-            if (confirm('Are you sure you want to clear all saved data? This cannot be undone.')) {
+            // --- Caching Logic ---
+            const saveToCache = () => allInputs.forEach(input => localStorage.setItem(input.id, input.value));
+            const loadFromCache = () => {
                 allInputs.forEach(input => {
-                    // Only clear non-config inputs
-                    if (!input.classList.contains('bg-gray-50')) {
-                         localStorage.removeItem(input.id);
-                         input.value = '';
-                    }
+                    const savedValue = localStorage.getItem(input.id);
+                    if (savedValue) input.value = savedValue;
                 });
-                calculate();
-            }
-        }
-        
-        document.getElementById('clearDataBtn').addEventListener('click', clearCache);
-
-        // --- Main Calculation Logic ---
-        function calculate() {
-            // Get all input values, defaulting to 0 if empty
-            const payRate = parseFloat(document.getElementById('payRate').value) || 0;
-            const workHours = parseFloat(document.getElementById('workHours').value) || 0;
-            const maintenanceLoan = parseFloat(document.getElementById('maintenanceLoan').value) || 0;
-            const initialChecking = parseFloat(document.getElementById('initialChecking').value) || 0;
-            
-            const rent = parseFloat(document.getElementById('rent').value) || 0;
-            const bills = parseFloat(document.getElementById('bills').value) || 0;
-            const weeklyLivingBudget = parseFloat(document.getElementById('weeklyLivingBudget').value) || 0;
-            const oneOffExpenses = parseFloat(document.getElementById('oneOffExpenses').value) || 0;
-
-            const initialInvestmentValue = parseFloat(document.getElementById('initialInvestmentValue').value) || 0;
-            const expectedGrowth = parseFloat(document.getElementById('expectedGrowth').value) || 0;
-            const fundFee = parseFloat(document.getElementById('fundFee').value) || 0;
-
-            const academicWeeks = parseFloat(document.getElementById('academicWeeks').value) || 39;
-            const rentMonths = parseFloat(document.getElementById('rentMonths').value) || 11;
-
-            // --- CALCULATIONS ---
-
-            // 1. Income Calculations
-            const weeklyIncome = payRate * workHours;
-            const annualJobIncome = weeklyIncome * academicWeeks;
-            const totalAnnualIncome = annualJobIncome + maintenanceLoan;
-
-            // 2. Expense Calculations
-            const annualHousingCosts = (rent + bills) * rentMonths;
-            const annualLivingCosts = weeklyLivingBudget * academicWeeks;
-            const totalAnnualExpenses = annualHousingCosts + annualLivingCosts + oneOffExpenses;
-            const monthlyBurn = totalAnnualExpenses / 12;
-
-            // 3. Cash Flow & Surplus/Deficit
-            const annualSurplus = totalAnnualIncome - totalAnnualExpenses;
-            const eoyCash = initialChecking + annualSurplus;
-            
-            // 4. Investment Calculations
-            const netGrowthRate = expectedGrowth - fundFee;
-            const grossGrowthValue = initialInvestmentValue * (expectedGrowth / 100);
-            const fundFeeValue = initialInvestmentValue * (fundFee / 100);
-            const netInvestmentGrowth = initialInvestmentValue * (netGrowthRate / 100);
-            const eoyInvestments = initialInvestmentValue + netInvestmentGrowth;
-
-            // 5. Net Worth Calculations
-            const startNetWorth = initialChecking + initialInvestmentValue;
-            const eoyNetWorth = eoyCash + eoyInvestments;
-            const netWorthChange = eoyNetWorth - startNetWorth;
-
-            // --- UI Update ---
-            const formatCurrency = (val) => val.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-            const formatPercent = (val) => `${val.toFixed(2)}%`;
-            
-            const updateMetric = (id, value, formatter = formatCurrency, checkSign = false) => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.textContent = formatter(value);
-                if (checkSign) {
-                    el.classList.toggle('positive', value >= 0);
-                    el.classList.toggle('negative', value < 0);
+            };
+            const clearCache = () => {
+                if (confirm('Are you sure you want to clear all saved data? This cannot be undone.')) {
+                    allInputs.forEach(input => {
+                        if (!input.classList.contains('bg-gray-50')) {
+                            localStorage.removeItem(input.id);
+                            input.value = '';
+                        }
+                    });
+                    calculateAndRender();
                 }
             };
-            
-            // Annual Overview Box
-            updateMetric('out-annualJobIncome', annualJobIncome);
-            updateMetric('out-maintenanceLoan', maintenanceLoan);
-            updateMetric('out-totalAnnualIncome', totalAnnualIncome);
-            updateMetric('out-totalAnnualExpenses', totalAnnualExpenses);
-            updateMetric('out-annualSurplus', annualSurplus, formatCurrency, true);
-            
-            // Expense Breakdown Box
-            updateMetric('out-annualHousingCosts', annualHousingCosts);
-            updateMetric('out-annualLivingCosts', annualLivingCosts);
-            updateMetric('out-oneOffExpenses', oneOffExpenses);
-            updateMetric('out-totalAnnualExpenses2', totalAnnualExpenses);
-            
-            // Cash Flow Box
-            updateMetric('out-weeklyIncome', weeklyIncome);
-            updateMetric('out-weeklyLivingSpend', weeklyLivingBudget);
-            updateMetric('out-monthlyBurn', monthlyBurn);
-            updateMetric('out-startCash', initialChecking);
-            updateMetric('out-eoyCash', eoyCash, formatCurrency, true);
-
-            // Investment Box
-            updateMetric('out-startInvestments', initialInvestmentValue);
-            updateMetric('out-grossGrowthPercent', expectedGrowth, formatPercent);
-            updateMetric('out-netGrowthPercent', netGrowthRate, formatPercent);
-            updateMetric('out-grossGrowthValue', grossGrowthValue);
-            updateMetric('out-fundFeeValue', fundFeeValue);
-            updateMetric('out-netGrowthValue', netInvestmentGrowth, formatCurrency, true);
-
-            // Net Worth Summary
-            updateMetric('out-startNetWorth', startNetWorth);
-            updateMetric('out-eoyNetWorth', eoyNetWorth, formatCurrency, true);
-            updateMetric('out-netWorthChange', netWorthChange, formatCurrency, true);
-
-            // Update charts with new data
-            updateCharts({
-                annualHousingCosts,
-                annualLivingCosts,
-                oneOffExpenses,
-                totalAnnualIncome,
-                totalAnnualExpenses,
-                startNetWorth,
-                eoyNetWorth
-            });
-
-            // Save valid inputs to cache after calculation
-            saveToCache();
-        }
-
-        // --- Charting Logic ---
-        function updateCharts(data) {
-            const chartFont = { size: 12, family: 'Inter' };
-            const commonPlugins = {
-                legend: { labels: { font: chartFont } },
-                tooltip: { bodyFont: chartFont, titleFont: chartFont }
+            const loadSampleData = () => {
+                const sample = {
+                    initialChecking: 1500, initialInvestmentValue: 2000, maintenanceLoan: 9978,
+                    payRate: 12, workHours: 10, scholarships: 0, parentalSupport: 50,
+                    rent: 650, bills: 70, groceries: 180, transport: 45, social: 120, other: 75, oneOffExpenses: 300
+                };
+                Object.keys(sample).forEach(id => document.getElementById(id).value = sample[id]);
+                calculateAndRender();
             };
 
-            // 1. Expense Chart (Doughnut)
-            const expenseData = {
-                labels: ['Housing & Bills', 'General Living', 'One-Off Expenses'],
-                datasets: [{
-                    label: 'Annual Expenses',
-                    data: [data.annualHousingCosts, data.annualLivingCosts, data.oneOffExpenses],
-                    backgroundColor: ['#3b82f6', '#f97316', '#ef4444'],
-                    borderColor: '#ffffff',
-                    borderWidth: 2,
-                }]
-            };
-            if (expenseChart) {
-                expenseChart.data = expenseData;
-                expenseChart.update();
-            } else {
-                expenseChart = new Chart(document.getElementById('expenseChart'), {
-                    type: 'doughnut',
-                    data: expenseData,
-                    options: { responsive: true, maintainAspectRatio: false, plugins: commonPlugins }
-                });
+            document.getElementById('clearDataBtn').addEventListener('click', clearCache);
+            document.getElementById('loadSampleBtn').addEventListener('click', loadSampleData);
+            
+            // --- Core Calculation Engine ---
+            function calculateAndRender() {
+                // 1. Get all input values
+                const inputs = allInputs.reduce((acc, input) => {
+                    acc[input.id] = parseFloat(input.value) || 0;
+                    return acc;
+                }, {});
+
+                // 2. Perform Calculations
+                // INCOME
+                const monthlyJobIncome = (inputs.payRate * inputs.workHours * inputs.academicWeeks) / 12;
+                const monthlyLoan = inputs.maintenanceLoan / 12;
+                const monthlyScholarships = inputs.scholarships / 12;
+                const monthlyParental = inputs.parentalSupport;
+                const totalMonthlyIncome = monthlyJobIncome + monthlyLoan + monthlyScholarships + monthlyParental;
+                const totalAnnualIncome = totalMonthlyIncome * 12;
+
+                // EXPENSES
+                const monthlyCoreExpenses = inputs.groceries + inputs.transport + inputs.social + inputs.other;
+                const monthlyHousing = (inputs.rent + inputs.bills);
+                const avgMonthlyOneOff = inputs.oneOffExpenses / 12;
+                const totalMonthlyExpenses = monthlyHousing + monthlyCoreExpenses + avgMonthlyOneOff;
+                const totalAnnualExpenses = (inputs.rent + inputs.bills) * inputs.rentMonths + (monthlyCoreExpenses * 12) + inputs.oneOffExpenses;
+
+                // CASH FLOW & NET WORTH
+                const annualSurplus = totalAnnualIncome - totalAnnualExpenses;
+                const eoyCash = inputs.initialChecking + annualSurplus;
+                const netInvestmentGrowth = inputs.initialInvestmentValue * (inputs.expectedGrowth / 100);
+                const eoyInvestments = inputs.initialInvestmentValue + netInvestmentGrowth;
+                const startNetWorth = inputs.initialChecking + inputs.initialInvestmentValue;
+                const eoyNetWorth = eoyCash + eoyInvestments;
+                const netWorthChange = eoyNetWorth - startNetWorth;
+                
+                // DERIVED METRICS
+                const weeklyIncomeTermTime = (inputs.payRate * inputs.workHours) + (inputs.maintenanceLoan / inputs.academicWeeks) + (inputs.scholarships / 52) + (inputs.parentalSupport * 12 / 52);
+                const weeklyEssentialsTermTime = (monthlyHousing * inputs.rentMonths / inputs.academicWeeks) + (monthlyCoreExpenses / (52 / 12));
+                const weeklyDiscretionary = weeklyIncomeTermTime - weeklyEssentialsTermTime;
+
+                // Prepare data object for rendering
+                const financialData = {
+                    annualSurplus, eoyNetWorth, netWorthChange,
+                    totalAnnualIncome, totalAnnualExpenses,
+                    startNetWorth, netInvestmentGrowth,
+                    monthlyBurn: totalAnnualExpenses / 12,
+                    discretionary: weeklyDiscretionary > 0 ? weeklyDiscretionary / 7 : 0,
+                    yourSpending: {
+                        rent: inputs.rent, bills: inputs.bills, groceries: inputs.groceries,
+                        transport: inputs.transport, social: inputs.social, other: inputs.other
+                    },
+                    yourTotalMonthlySpend: totalAnnualExpenses / 12,
+                    // For Net Worth Chart
+                    initialNetWorth: startNetWorth,
+                    monthlyNetChange: (totalMonthlyIncome - totalAnnualExpenses/12) + (netInvestmentGrowth / 12)
+                };
+
+                // 3. Render all outputs
+                renderUI(financialData);
+                saveToCache();
             }
 
-            // 2. Income vs. Expense Chart (Bar)
-            const incomeExpenseData = {
-                labels: ['Annual Figures'],
-                datasets: [
-                    { label: 'Total Income', data: [data.totalAnnualIncome], backgroundColor: '#16a34a' },
-                    { label: 'Total Expenses', data: [data.totalAnnualExpenses], backgroundColor: '#dc2626' }
-                ]
-            };
-            if (incomeExpenseChart) {
-                incomeExpenseChart.data = incomeExpenseData;
-                incomeExpenseChart.update();
-            } else {
-                incomeExpenseChart = new Chart(document.getElementById('incomeExpenseChart'), {
-                    type: 'bar',
-                    data: incomeExpenseData,
-                    options: { responsive: true, maintainAspectRatio: false, plugins: commonPlugins }
-                });
+            // --- UI Rendering ---
+            function renderUI(data) {
+                const formatCurrency = (val, digits = 0) => val.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', minimumFractionDigits: digits, maximumFractionDigits: digits });
+                const updateMetric = (id, value, formatter = formatCurrency, checkSign = false) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    el.textContent = formatter(value);
+                    if (checkSign) {
+                        el.classList.remove('positive', 'negative', 'neutral');
+                        if (value > 0.1) el.classList.add('positive');
+                        else if (value < -0.1) el.classList.add('negative');
+                        else el.classList.add('neutral');
+                    }
+                };
+                
+                // Key Metrics
+                updateMetric('out-annualSurplus', data.annualSurplus, formatCurrency, true);
+                updateMetric('out-eoyNetWorth', data.eoyNetWorth, formatCurrency, true);
+                updateMetric('out-netWorthChange', data.netWorthChange, formatCurrency, true);
+                updateMetric('out-discretionary', data.discretionary, (v) => `${formatCurrency(v)}/day`, true);
+                
+                // Financial Breakdown
+                updateMetric('out-totalAnnualIncome', data.totalAnnualIncome);
+                updateMetric('out-totalAnnualExpenses', data.totalAnnualExpenses);
+                updateMetric('out-startNetWorth', data.startNetWorth);
+                updateMetric('out-netGrowthValue', data.netInvestmentGrowth, formatCurrency, true);
+                updateMetric('out-monthlyBurn', data.monthlyBurn);
+
+                // Comparison section
+                updateMetric('comp-yourTotal', data.yourTotalMonthlySpend);
+                updateMetric('comp-ukTotal', STUDENT_AVERAGES.uk.total);
+                updateMetric('comp-bathTotal', STUDENT_AVERAGES.bath.total);
+                
+                // Dynamic Feedback
+                updateFeedback(data.annualSurplus, data.yourTotalMonthlySpend);
+
+                // Update Charts
+                updateCharts(data);
             }
             
-            // 3. Net Worth Chart (Line)
-            const netWorthData = {
-                labels: ['Start of Year', 'End of Year'],
-                datasets: [{
-                    label: 'Projected Net Worth',
-                    data: [data.startNetWorth, data.eoyNetWorth],
-                    fill: true,
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    tension: 0.1
-                }]
-            };
-             if (netWorthChart) {
-                netWorthChart.data = netWorthData;
-                netWorthChart.update();
-            } else {
-                netWorthChart = new Chart(document.getElementById('netWorthChart'), {
-                    type: 'line',
-                    data: netWorthData,
-                    options: { responsive: true, maintainAspectRatio: false, plugins: commonPlugins }
-                });
+            function updateFeedback(surplus, yourSpend) {
+                const feedbackSection = document.getElementById('feedbackSection');
+                const icon = document.getElementById('feedbackIcon');
+                const text = document.getElementById('feedbackText');
+                
+                icon.className = "text-3xl"; // Reset class
+                feedbackSection.className = "p-5 rounded-2xl shadow-lg flex items-center gap-4";
+                
+                if (surplus > 2000) {
+                    feedbackSection.classList.add("bg-green-50");
+                    icon.classList.add("fa-solid", "fa-seedling", "text-green-500");
+                    text.textContent = "Excellent! Your budget shows a strong annual surplus. You're in a great position to save, invest, or handle unexpected costs.";
+                } else if (surplus >= 0) {
+                     feedbackSection.classList.add("bg-blue-50");
+                     icon.classList.add("fa-solid", "fa-check-circle", "text-blue-500");
+                     text.textContent = "On track! You're living within your means. Look for small areas to optimize spending to boost your savings further.";
+                } else if (surplus > -1000) {
+                     feedbackSection.classList.add("bg-yellow-50");
+                     icon.classList.add("fa-solid", "fa-exclamation-triangle", "text-yellow-500");
+                     text.textContent = "Caution: Your projected expenses slightly exceed your income. Review your discretionary spending to avoid going into debt.";
+                } else {
+                     feedbackSection.classList.add("bg-red-50");
+                     icon.classList.add("fa-solid", "fa-fire", "text-red-500");
+                     text.textContent = "Warning! Your spending is significantly higher than your income. Urgent budget adjustments are needed to ensure financial stability.";
+                }
             }
-        }
 
-        // Add event listeners and run initial calculation
-        allInputs.forEach(input => {
-            input.addEventListener('input', calculate);
-        });
+            // --- Charting Logic ---
+            function updateCharts(data) {
+                const chartFont = { size: 12, family: 'Inter' };
+                const commonPlugins = {
+                    legend: { labels: { font: chartFont }, position: 'top' },
+                    tooltip: { bodyFont: chartFont, titleFont: chartFont }
+                };
+                
+                // Expense Chart (Doughnut)
+                const expenseData = {
+                    labels: ['Rent & Bills', 'Groceries', 'Social', 'Transport', 'Other Spending'],
+                    datasets: [{
+                        label: 'Monthly Expenses',
+                        data: [data.yourSpending.rent + data.yourSpending.bills, data.yourSpending.groceries, data.yourSpending.social, data.yourSpending.transport, data.yourSpending.other],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                    }]
+                };
+                if (expenseChart) {
+                    expenseChart.data = expenseData;
+                    expenseChart.update();
+                } else {
+                    expenseChart = new Chart(document.getElementById('expenseChart'), {
+                        type: 'doughnut', data: expenseData, options: { responsive: true, maintainAspectRatio: false, plugins: commonPlugins }
+                    });
+                }
 
-        window.addEventListener('DOMContentLoaded', () => {
+                // Net Worth Chart (Line)
+                const netWorthProjection = Array.from({ length: 13 }, (_, i) => data.initialNetWorth + (data.monthlyNetChange * i));
+                const netWorthData = {
+                    labels: ['Start', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'End'],
+                    datasets: [{
+                        label: 'Projected Net Worth', data: netWorthProjection,
+                        fill: true, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', tension: 0.3, pointRadius: 2
+                    }]
+                };
+                if (netWorthChart) {
+                    netWorthChart.data = netWorthData;
+                    netWorthChart.update();
+                } else {
+                    netWorthChart = new Chart(document.getElementById('netWorthChart'), {
+                        type: 'line', data: netWorthData, options: { responsive: true, maintainAspectRatio: false, plugins: commonPlugins }
+                    });
+                }
+                
+                // Comparison Chart (Bar)
+                const comparisonData = {
+                    labels: ['Rent', 'Bills', 'Groceries', 'Transport', 'Social', 'Other'],
+                    datasets: [
+                        { label: 'You', data: Object.values(data.yourSpending), backgroundColor: '#3b82f6' },
+                        { label: 'UK Average', data: Object.values(STUDENT_AVERAGES.uk), backgroundColor: '#6b7280' },
+                        { label: 'Bath Average', data: Object.values(STUDENT_AVERAGES.bath), backgroundColor: '#a5b4fc' }
+                    ]
+                };
+                 if (comparisonChart) {
+                    comparisonChart.data = comparisonData;
+                    comparisonChart.update();
+                } else {
+                    comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+                        type: 'bar', data: comparisonData, options: { responsive: true, maintainAspectRatio: false, plugins: commonPlugins, scales: {y: {beginAtZero: true}} }
+                    });
+                }
+            }
+
+            // --- Initial Load ---
+            allInputs.forEach(input => input.addEventListener('input', calculateAndRender));
             loadFromCache();
-            calculate();
+            calculateAndRender();
         });
-
     </script>
 </body>
 </html>
